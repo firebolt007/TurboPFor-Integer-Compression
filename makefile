@@ -108,10 +108,11 @@ transpose_sse.o: transpose.c
 transpose_avx2.o: transpose.c
 	$(CC) -O3 -w $(AVX2) -DAVX2_ON $(OPT) -c transpose.c -o transpose_avx2.o
 
+
 -include ext/libext.mak
 
 LIB=bitpack.o bitpack_sse.o bitunpack.o bitunpack_sse.o \
-    vp4c.o vp4c_sse.o vp4d.o vp4d_sse.o \
+    vp4c.o vp4c_sse.o vp4d.o vp4d_sse.o vint.o \
 	bitutil.o fp.o v8.o vint.o transpose.o transpose_sse.o trlec.o trled.o vsimple.o eliasfano.o
 ifeq ($(ARCH),x86_64)
 LIB+=bitpack_avx2.o bitunpack_avx2.o vp4c_avx2.o vp4d_avx2.o transpose_avx2.o
@@ -123,11 +124,16 @@ libic.a: $(LIB)
 icapp: icapp.o libic.a $(OB)
 	$(CL) $^ $(LDFLAGS) -o icapp
 
-myapp: myapp.o libic.a
-	$(CC) $^ $(LDFLAGS) -o myapp
+hellop4: hellop4.o libic.a
+	$(CC) $^ $(LDFLAGS) -o hellop4
 
-mycpp: mycpp.o libic.a
-	$(CXX) $^ $(LDFLAGS) -lpthread -o mycpp
+LIB_M=circuitutil.o 
+
+libcir.a: $(LIB_M)
+	ar cr $@ $+
+
+testlib.o: testlib.cpp libcir.a libic.a
+	$(CXX) -O3 -w $(OPT) testlib.cpp  libcir.a libic.a -o testlib.o
 
 .c.o:
 	$(CC) -O3 $(CFLAGS) $< -c -o $@  
