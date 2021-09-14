@@ -133,7 +133,7 @@ libcir.a: $(LIB_M)
 	ar cr $@ $+
 
 testlib.o: testlib.cpp libcir.a libic.a
-	$(CXX) -O3 -w $(OPT) testlib.cpp  libcir.a libic.a -o testlib.o
+	$(CXX) -O3 -w -pthread $(OPT) testlib.cpp  libcir.a libic.a -o testlib.o
 
 .c.o:
 	$(CC) -O3 $(CFLAGS) $< -c -o $@  
